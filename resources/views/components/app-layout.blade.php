@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? 'LMS' }} - Learning Portal</title>
+    <title>{{ $title ?? 'LMS' }} - LMS Prima</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -87,8 +87,8 @@
                     <i data-lucide="graduation-cap" class="w-5 h-5 lg:w-6 lg:h-6"></i>
                 </div>
                 <div>
-                    <span class="text-base lg:text-lg font-bold text-white tracking-tight">LMS Portal</span>
-                    <span class="block text-[9px] lg:text-[10px] uppercase font-semibold tracking-wider text-indigo-400">Akademik</span>
+                    <span class="text-base lg:text-lg font-bold text-white tracking-tight">LMS Prima</span>
+                    <span class="block text-[9px] lg:text-[10px] uppercase font-semibold tracking-wider text-indigo-400">Prima Akademik</span>
                 </div>
             </a>
             <button type="button" id="sidebar-close" class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg lg:hidden transition" aria-label="Tutup Menu">
