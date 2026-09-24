@@ -8,7 +8,7 @@
                     <span>Portal Pembelajaran Modern</span>
                 </div>
                 <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight">
-                    Halo, {{ $user->name }}! 
+                    Selamat Datang, {{ $user->name }}! 
                 </h1>
                 <p class="mt-2 text-indigo-100 text-xs sm:text-sm leading-relaxed">
                     @if($user->isAdmin())
