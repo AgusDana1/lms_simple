@@ -164,12 +164,9 @@
                         {{ auth()->user()->role?->name ?? 'User' }}
                     </span>
                 </div>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" title="Keluar" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition">
-                        <i data-lucide="log-out" class="w-4 h-4"></i>
-                    </button>
-                </form>
+                <button type="button" onclick="openLogoutModal()" title="Keluar" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition" aria-label="Keluar">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
             </div>
         </div>
     </aside>
@@ -210,5 +207,93 @@
         </main>
     </div>
 
+    <!-- Modern Logout Confirmation Modal -->
+    <div id="logout-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-backdrop fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeLogoutModal()"></div>
+        <div class="modal-panel relative bg-white rounded-3xl shadow-2xl max-w-sm sm:max-w-md w-full p-6 sm:p-7 z-10 border border-slate-100/80 text-center">
+            <!-- Close Button -->
+            <button type="button" onclick="closeLogoutModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition" aria-label="Tutup">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Icon Header -->
+            <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100/80 mx-auto flex items-center justify-center mb-4 shadow-sm shadow-rose-500/10">
+                <i data-lucide="log-out" class="w-7 h-7 stroke-[2.2]"></i>
+            </div>
+
+            <!-- Title & Description -->
+            <h3 class="text-lg font-bold text-slate-800">Konfirmasi Keluar</h3>
+            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                Apakah Anda yakin ingin keluar dari akun ini? Sesi pembelajaran Anda saat ini akan diakhiri.
+            </p>
+
+            <!-- Active User Preview Card -->
+            <div class="my-5 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3 text-left">
+                <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+                    @if(auth()->user()->profile_photo)
+                        <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" alt="Avatar" class="w-full h-full object-cover">
+                    @else
+                        <span class="text-xs font-bold text-indigo-400 uppercase">
+                            {{ substr(auth()->user()->name, 0, 2) }}
+                        </span>
+                    @endif
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-xs font-bold text-slate-800 truncate">{{ auth()->user()->name }}</p>
+                    <p class="text-[11px] text-slate-400 truncate">{{ auth()->user()->email }}</p>
+                </div>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold shrink-0
+                    {{ auth()->user()->isAdmin() ? 'bg-rose-100 text-rose-700' : (auth()->user()->isDosen() ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700') }}">
+                    {{ auth()->user()->role?->name ?? 'User' }}
+                </span>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 transition">
+                    Batal
+                </button>
+                <form method="POST" action="{{ route('logout') }}" class="flex-1">
+                    @csrf
+                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 shadow-md shadow-rose-600/25 transition transform active:scale-98">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                        <span>Ya, Keluar</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openLogoutModal() {
+            if (typeof window.openModal === 'function') {
+                window.openModal('logout-modal');
+            } else {
+                const modal = document.getElementById('logout-modal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+            }
+        }
+
+        function closeLogoutModal() {
+            if (typeof window.closeModal === 'function') {
+                window.closeModal('logout-modal');
+            } else {
+                const modal = document.getElementById('logout-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLogoutModal();
+            }
+        });
+    </script>
 </body>
 </html>

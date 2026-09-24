@@ -8,7 +8,7 @@
                     <span>Portal Pembelajaran Modern</span>
                 </div>
                 <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight">
-                    Selamat Datang, {{ $user->name }}! 
+                    Halo, {{ $user->name }}! 
                 </h1>
                 <p class="mt-2 text-indigo-100 text-xs sm:text-sm leading-relaxed">
                     @if($user->isAdmin())
@@ -152,6 +152,162 @@
                 </div>
             @endif
         </div>
+
+        @if($user->isAdmin())
+            <!-- Grafik Perkembangan Dosen & Mahasiswa -->
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-7 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                                <i data-lucide="trending-up" class="w-5 h-5"></i>
+                            </span>
+                            <div>
+                                <h3 class="text-base sm:text-lg font-bold text-slate-800">Tren Pertumbuhan & Aktivitas Pengguna</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Pertumbuhan data Dosen dan Mahasiswa yang terdaftar & aktif di LMS</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legend & Active Badges -->
+                    <div class="flex flex-wrap items-center gap-3 text-xs font-semibold">
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-50/80 text-indigo-700 border border-indigo-100/60">
+                            <span class="w-3 h-3 rounded-full bg-indigo-600"></span>
+                            <span>Mahasiswa: <strong class="text-slate-800">{{ $totalStudents }}</strong></span>
+                            <span class="ml-1 text-[11px] font-bold text-indigo-500">({{ $activeStudentsCount ?? 0 }} Aktif)</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50/80 text-amber-700 border border-amber-100/60">
+                            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                            <span>Dosen: <strong class="text-slate-800">{{ $totalLecturers }}</strong></span>
+                            <span class="ml-1 text-[11px] font-bold text-amber-500">({{ $activeLecturersCount ?? 0 }} Aktif)</span>
+                        </div>
+                    </div>
+                </div>
+
+                @php
+                    $maxDataVal = max(
+                        max($chartStudents ?? [1]),
+                        max($chartLecturers ?? [1]),
+                        5
+                    );
+                    $chartPointsCount = count($chartLabels ?? [1]);
+                    $svgWidth = 700;
+                    $svgHeight = 220;
+                    $padX = 45;
+                    $padYTop = 30;
+                    $padYBottom = 35;
+                    $chartW = $svgWidth - ($padX * 2);
+                    $chartH = $svgHeight - $padYTop - $padYBottom;
+
+                    $stepX = $chartPointsCount > 1 ? $chartW / ($chartPointsCount - 1) : $chartW;
+
+                    $studentPoints = [];
+                    $lecturerPoints = [];
+
+                    foreach (($chartStudents ?? []) as $idx => $val) {
+                        $x = round($padX + ($idx * $stepX), 1);
+                        $y = round($padYTop + $chartH - (($val / $maxDataVal) * $chartH), 1);
+                        $studentPoints[] = ['x' => $x, 'y' => $y, 'val' => $val, 'label' => $chartLabels[$idx] ?? ''];
+                    }
+
+                    foreach (($chartLecturers ?? []) as $idx => $val) {
+                        $x = round($padX + ($idx * $stepX), 1);
+                        $y = round($padYTop + $chartH - (($val / $maxDataVal) * $chartH), 1);
+                        $lecturerPoints[] = ['x' => $x, 'y' => $y, 'val' => $val, 'label' => $chartLabels[$idx] ?? ''];
+                    }
+
+                    $studentPath = '';
+                    $studentArea = '';
+                    if (!empty($studentPoints)) {
+                        $studentPath = 'M ' . $studentPoints[0]['x'] . ' ' . $studentPoints[0]['y'];
+                        $studentArea = 'M ' . $studentPoints[0]['x'] . ' ' . ($padYTop + $chartH);
+                        $studentArea .= ' L ' . $studentPoints[0]['x'] . ' ' . $studentPoints[0]['y'];
+                        for ($i = 1; $i < count($studentPoints); $i++) {
+                            $studentPath .= ' L ' . $studentPoints[$i]['x'] . ' ' . $studentPoints[$i]['y'];
+                            $studentArea .= ' L ' . $studentPoints[$i]['x'] . ' ' . $studentPoints[$i]['y'];
+                        }
+                        $studentArea .= ' L ' . end($studentPoints)['x'] . ' ' . ($padYTop + $chartH) . ' Z';
+                    }
+
+                    $lecturerPath = '';
+                    $lecturerArea = '';
+                    if (!empty($lecturerPoints)) {
+                        $lecturerPath = 'M ' . $lecturerPoints[0]['x'] . ' ' . $lecturerPoints[0]['y'];
+                        $lecturerArea = 'M ' . $lecturerPoints[0]['x'] . ' ' . ($padYTop + $chartH);
+                        $lecturerArea .= ' L ' . $lecturerPoints[0]['x'] . ' ' . $lecturerPoints[0]['y'];
+                        for ($i = 1; $i < count($lecturerPoints); $i++) {
+                            $lecturerPath .= ' L ' . $lecturerPoints[$i]['x'] . ' ' . $lecturerPoints[$i]['y'];
+                            $lecturerArea .= ' L ' . $lecturerPoints[$i]['x'] . ' ' . $lecturerPoints[$i]['y'];
+                        }
+                        $lecturerArea .= ' L ' . end($lecturerPoints)['x'] . ' ' . ($padYTop + $chartH) . ' Z';
+                    }
+                @endphp
+
+                <!-- Chart Canvas Container -->
+                <div class="mt-6 w-full overflow-x-auto">
+                    <div class="min-w-[550px]">
+                        <svg viewBox="0 0 {{ $svgWidth }} {{ $svgHeight }}" class="w-full h-auto overflow-visible select-none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="studentGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4f46e5" stop-opacity="0.22" />
+                                    <stop offset="100%" stop-color="#4f46e5" stop-opacity="0.0" />
+                                </linearGradient>
+                                <linearGradient id="lecturerGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.22" />
+                                    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.0" />
+                                </linearGradient>
+                            </defs>
+
+                            <!-- Horizontal Grid Lines -->
+                            @for($g = 0; $g <= 4; $g++)
+                                @php
+                                    $gridY = round($padYTop + ($g * ($chartH / 4)), 1);
+                                    $gridVal = round($maxDataVal - ($g * ($maxDataVal / 4)));
+                                @endphp
+                                <line x1="{{ $padX }}" y1="{{ $gridY }}" x2="{{ $svgWidth - $padX }}" y2="{{ $gridY }}" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="{{ $g == 4 ? '0' : '4 4' }}" />
+                                <text x="{{ $padX - 10 }}" y="{{ $gridY + 4 }}" font-size="10" fill="#94a3b8" text-anchor="end" font-family="sans-serif">{{ $gridVal }}</text>
+                            @endfor
+
+                            <!-- Area Fills -->
+                            @if($studentArea)
+                                <path d="{{ $studentArea }}" fill="url(#studentGrad)" />
+                            @endif
+                            @if($lecturerArea)
+                                <path d="{{ $lecturerArea }}" fill="url(#lecturerGrad)" />
+                            @endif
+
+                            <!-- Student Line -->
+                            @if($studentPath)
+                                <path d="{{ $studentPath }}" fill="none" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                            @endif
+
+                            <!-- Lecturer Line -->
+                            @if($lecturerPath)
+                                <path d="{{ $lecturerPath }}" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                            @endif
+
+                            <!-- Points & Labels -->
+                            @foreach($studentPoints as $p)
+                                <g class="group">
+                                    <circle cx="{{ $p['x'] }}" cy="{{ $p['y'] }}" r="4.5" fill="#ffffff" stroke="#4f46e5" stroke-width="2.5" class="transition-all hover:r-6 cursor-pointer">
+                                        <title>Mahasiswa: {{ $p['val'] }} ({{ $p['label'] }})</title>
+                                    </circle>
+                                    <text x="{{ $p['x'] }}" y="{{ $padYTop + $chartH + 20 }}" font-size="11" fill="#64748b" text-anchor="middle" font-weight="500" font-family="sans-serif">
+                                        {{ $p['label'] }}
+                                    </text>
+                                </g>
+                            @endforeach
+
+                            @foreach($lecturerPoints as $p)
+                                <circle cx="{{ $p['x'] }}" cy="{{ $p['y'] }}" r="4.5" fill="#ffffff" stroke="#f59e0b" stroke-width="2.5" class="transition-all hover:r-6 cursor-pointer">
+                                    <title>Dosen: {{ $p['val'] }} ({{ $p['label'] }})</title>
+                                </circle>
+                            @endforeach
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <!-- Role-Specific Main Section -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

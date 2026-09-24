@@ -23,15 +23,45 @@ class DashboardController extends Controller
 
         if ($user->isAdmin()) {
             $data['totalUsers'] = User::count();
-            $data['totalLecturers'] = User::whereHas('role', fn ($q) => $q->where('slug', 'dosen'))->count();
-            $data['totalStudents'] = User::whereHas('role', fn ($q) => $q->where('slug', 'mahasiswa'))->count();
+            $data['totalLecturers'] = User::whereHas('role', fn($q) => $q->where('slug', 'dosen'))->count();
+            $data['totalStudents'] = User::whereHas('role', fn($q) => $q->where('slug', 'mahasiswa'))->count();
             $data['totalCourses'] = Course::count();
             $data['publishedCourses'] = Course::where('is_published', true)->count();
             $data['recentUsers'] = User::with('role')->latest()->take(5)->get();
             $data['recentCourses'] = Course::with('creator')->latest()->take(5)->get();
+
+            // Total mahasiswa & dosen aktif dari database user
+            $data['activeStudentsCount'] = User::whereHas('role', fn($q) => $q->where('slug', 'mahasiswa'))
+                ->where(function ($q) {
+                    $q->where('is_active', true)
+                        ->orWhereNotNull('last_login_at');
+                })->count();
+
+            $data['activeLecturersCount'] = User::whereHas('role', fn($q) => $q->where('slug', 'dosen'))
+                ->where(function ($q) {
+                    $q->where('is_active', true)
+                        ->orWhereNotNull('last_login_at');
+                })->count();
+
+            // Data grafik tren pertumbuhan pengguna (6 bulan terakhir hingga bulan ini)
+            // Setiap mahasiswa atau dosen baru mendaftar, titik data bulan terkini akan langsung bertambah
+            $months = collect(range(5, 0))->map(fn($i) => now()->subMonths($i));
+            $data['chartLabels'] = $months->map(fn($m) => $m->translatedFormat('M Y'))->toArray();
+
+            $data['chartStudents'] = $months->map(function ($m) {
+                return User::whereHas('role', fn($q) => $q->where('slug', 'mahasiswa'))
+                    ->where('created_at', '<=', $m->endOfMonth())
+                    ->count();
+            })->toArray();
+
+            $data['chartLecturers'] = $months->map(function ($m) {
+                return User::whereHas('role', fn($q) => $q->where('slug', 'dosen'))
+                    ->where('created_at', '<=', $m->endOfMonth())
+                    ->count();
+            })->toArray();
         } elseif ($user->isDosen()) {
             $myCourses = Course::where('created_by', $user->id)
-                ->withCount(['members as student_count' => fn ($q) => $q->where('member_role', 'student')])
+                ->withCount(['members as student_count' => fn($q) => $q->where('member_role', 'student')])
                 ->withCount('materials', 'assignments', 'quizzes')
                 ->latest()
                 ->get();
@@ -46,7 +76,7 @@ class DashboardController extends Controller
                 ->distinct('course_members.user_id')
                 ->count('course_members.user_id');
 
-            $data['pendingSubmissions'] = AssignmentSubmission::whereHas('assignment', fn ($q) => $q->whereIn('course_id', $courseIds))
+            $data['pendingSubmissions'] = AssignmentSubmission::whereHas('assignment', fn($q) => $q->whereIn('course_id', $courseIds))
                 ->whereNull('score')
                 ->with(['assignment.course', 'student'])
                 ->latest('submitted_at')
@@ -75,7 +105,7 @@ class DashboardController extends Controller
             $data['upcomingAssignments'] = Assignment::whereIn('course_id', $enrolledCourseIds)
                 ->where('is_published', true)
                 ->where('due_at', '>=', now())
-                ->with(['course', 'submissions' => fn ($q) => $q->where('student_id', $user->id)])
+                ->with(['course', 'submissions' => fn($q) => $q->where('student_id', $user->id)])
                 ->orderBy('due_at', 'asc')
                 ->take(5)
                 ->get();
@@ -83,7 +113,7 @@ class DashboardController extends Controller
             // Available quizzes
             $data['availableQuizzes'] = Quiz::whereIn('course_id', $enrolledCourseIds)
                 ->where('is_published', true)
-                ->with(['course', 'attempts' => fn ($q) => $q->where('student_id', $user->id)])
+                ->with(['course', 'attempts' => fn($q) => $q->where('student_id', $user->id)])
                 ->latest()
                 ->take(5)
                 ->get();
