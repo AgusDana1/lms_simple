@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('is_correct')->nullable();
             $table->decimal('score', 5, 2)->nullable();
             $table->timestamps();
-            $table->unique('quiz_attempt_id', 'question_id');
+            $table->unique(['quiz_attempt_id', 'question_id']);
         });
     }
 

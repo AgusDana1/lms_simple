@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/assignments/{assignment}', [AssignmentController::class, 'destroy'])->name('assignments.destroy')->middleware('role:admin,dosen');
     Route::post('/assignments/{assignment}/submit', [AssignmentController::class, 'submit'])->name('assignments.submit');
     Route::post('/submissions/{submission}/grade', [AssignmentController::class, 'grade'])->name('submissions.grade')->middleware('role:admin,dosen');
+    Route::post('/submissions/{submission}/ai-analyze', [AssignmentController::class, 'analyzeWithAi'])->name('submissions.ai-analyze')->middleware('role:admin,dosen');
     Route::get('/submissions/{submission}/download', [AssignmentController::class, 'downloadSubmission'])->name('submissions.download');
 
     // Quizzes
@@ -74,12 +75,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/quizzes/{quiz}', [QuizController::class, 'destroy'])->name('quizzes.destroy')->middleware('role:admin,dosen');
     Route::get('/quizzes/{quiz}/questions', [QuizController::class, 'questions'])->name('quizzes.questions')->middleware('role:admin,dosen');
     Route::post('/quizzes/{quiz}/questions', [QuizController::class, 'storeQuestion'])->name('quizzes.questions.store')->middleware('role:admin,dosen');
+    Route::post('/quizzes/{quiz}/ai-generate-questions', [QuizController::class, 'generateWithAi'])->name('quizzes.ai-generate')->middleware('role:admin,dosen');
+    Route::put('/questions/{question}', [QuizController::class, 'updateQuestion'])->name('questions.update')->middleware('role:admin,dosen');
     Route::delete('/questions/{question}', [QuizController::class, 'destroyQuestion'])->name('questions.destroy')->middleware('role:admin,dosen');
+    Route::post('/quizzes/{quiz}/distribute-points', [QuizController::class, 'distributePoints'])->name('quizzes.distribute-points')->middleware('role:admin,dosen');
+    Route::post('/quizzes/{quiz}/generate-template', [QuizController::class, 'generateTemplateQuestions'])->name('quizzes.generate-template')->middleware('role:admin,dosen');
 
     Route::post('/quizzes/{quiz}/start', [QuizController::class, 'start'])->name('quizzes.start');
     Route::get('/quiz-attempts/{attempt}', [QuizController::class, 'take'])->name('quizzes.take');
     Route::post('/quiz-attempts/{attempt}/submit', [QuizController::class, 'submitAttempt'])->name('quizzes.submit');
     Route::get('/quiz-attempts/{attempt}/result', [QuizController::class, 'result'])->name('quizzes.result');
+    Route::post('/quiz-answers/{answer}/ai-evaluate', [QuizController::class, 'evaluateEssayWithAi'])->name('quiz-answers.ai-evaluate')->middleware('role:admin,dosen');
+    Route::post('/quiz-answers/{answer}/grade-essay', [QuizController::class, 'gradeEssayAnswer'])->name('quiz-answers.grade-essay')->middleware('role:admin,dosen');
 
     // Grades
     Route::get('/courses/{course}/grades', [GradeController::class, 'index'])->name('grades.index')->middleware('role:admin,dosen');

@@ -299,7 +299,7 @@
                                                 <i data-lucide="timer" class="w-3 h-3"></i> {{ $quiz->duration_minutes }} Menit
                                             </span>
                                             <span class="text-[11px] text-slate-400">Passing: {{ $quiz->passing_score ?? 60 }} Poin</span>
-                                            <span class="text-[11px] text-slate-400">• {{ $quiz->questions()->count() }} Soal</span>
+                                            <span class="text-[11px] text-slate-400">• {{ $quiz->questions()->count() }} Soal ({{ (float) $quiz->questions()->sum('points') }} Poin)</span>
                                         </div>
                                         <h3 class="text-sm font-bold text-slate-800 hover:text-indigo-600 transition">
                                             <a href="{{ route('quizzes.show', $quiz) }}">{{ $quiz->title }}</a>
@@ -625,6 +625,7 @@
                         <input type="checkbox" name="shuffle_questions" value="1" checked class="rounded text-indigo-600">
                         <span>Acak urutan butir soal untuk setiap mahasiswa</span>
                     </label>
+                    <p class="text-[11px] text-slate-400 mt-1.5">Kuis dapat memuat berapa pun butir soal (misal: 10, 20, 50, atau lebih) dengan patokan total bobot tetap 100 poin.</p>
                 </div>
                 <div class="pt-4 flex items-center justify-end gap-3">
                     <button type="button" onclick="closeModal('add-quiz-modal')" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600">Batal</button>

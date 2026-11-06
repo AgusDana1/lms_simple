@@ -220,7 +220,7 @@ class LmsSampleDataSeeder extends Seeder
             ['quiz_id' => $quiz->id, 'text' => 'Fitur apa di Laravel yang digunakan untuk mendefinisikan skema tabel basis data secara terprogram?'],
             [
                 'type' => 'multiple_choice',
-                'points' => 25,
+                'points' => 10,
                 'sort_order' => 1,
             ]
         );
@@ -234,7 +234,7 @@ class LmsSampleDataSeeder extends Seeder
             ['quiz_id' => $quiz->id, 'text' => 'Perintah Artisan manakah yang digunakan untuk membuat Controller baru di Laravel?'],
             [
                 'type' => 'multiple_choice',
-                'points' => 25,
+                'points' => 10,
                 'sort_order' => 2,
             ]
         );
@@ -248,7 +248,7 @@ class LmsSampleDataSeeder extends Seeder
             ['quiz_id' => $quiz->id, 'text' => 'Dalam Blade template, sintaks mana yang digunakan untuk menampilkan data dengan perlindungan XSS (escaping)?'],
             [
                 'type' => 'multiple_choice',
-                'points' => 25,
+                'points' => 10,
                 'sort_order' => 3,
             ]
         );
@@ -262,14 +262,96 @@ class LmsSampleDataSeeder extends Seeder
             ['quiz_id' => $quiz->id, 'text' => 'Secara default, Laravel menggunakan token CSRF untuk melindungi form HTTP POST dari serangan lintas situs.'],
             [
                 'type' => 'true_false',
-                'points' => 25,
+                'points' => 10,
                 'sort_order' => 4,
             ]
         );
         QuestionOption::updateOrCreate(['question_id' => $q4->id, 'option_text' => 'Benar (True)'], ['is_correct' => true, 'sort_order' => 1]);
         QuestionOption::updateOrCreate(['question_id' => $q4->id, 'option_text' => 'Salah (False)'], ['is_correct' => false, 'sort_order' => 2]);
 
-        // Quiz Attempt for student
+        // Question 5
+        $q5 = Question::updateOrCreate(
+            ['quiz_id' => $quiz->id, 'text' => 'Perintah Artisan apakah yang digunakan untuk menjalankan migrasi basis data ke versi terbaru?'],
+            [
+                'type' => 'multiple_choice',
+                'points' => 10,
+                'sort_order' => 5,
+            ]
+        );
+        QuestionOption::updateOrCreate(['question_id' => $q5->id, 'option_text' => 'php artisan migrate'], ['is_correct' => true, 'sort_order' => 1]);
+        QuestionOption::updateOrCreate(['question_id' => $q5->id, 'option_text' => 'php artisan db:run'], ['is_correct' => false, 'sort_order' => 2]);
+        QuestionOption::updateOrCreate(['question_id' => $q5->id, 'option_text' => 'php artisan schema:sync'], ['is_correct' => false, 'sort_order' => 3]);
+        QuestionOption::updateOrCreate(['question_id' => $q5->id, 'option_text' => 'php artisan table:update'], ['is_correct' => false, 'sort_order' => 4]);
+
+        // Question 6
+        $q6 = Question::updateOrCreate(
+            ['quiz_id' => $quiz->id, 'text' => 'Pada struktur direktori Laravel modern, di manakah lokasi default kelas Eloquent Model berada?'],
+            [
+                'type' => 'multiple_choice',
+                'points' => 10,
+                'sort_order' => 6,
+            ]
+        );
+        QuestionOption::updateOrCreate(['question_id' => $q6->id, 'option_text' => 'app/Models'], ['is_correct' => true, 'sort_order' => 1]);
+        QuestionOption::updateOrCreate(['question_id' => $q6->id, 'option_text' => 'database/models'], ['is_correct' => false, 'sort_order' => 2]);
+        QuestionOption::updateOrCreate(['question_id' => $q6->id, 'option_text' => 'app/Database'], ['is_correct' => false, 'sort_order' => 3]);
+        QuestionOption::updateOrCreate(['question_id' => $q6->id, 'option_text' => 'resources/models'], ['is_correct' => false, 'sort_order' => 4]);
+
+        // Question 7
+        $q7 = Question::updateOrCreate(
+            ['quiz_id' => $quiz->id, 'text' => 'Metode HTTP manakah yang paling sesuai digunakan untuk memperbarui sebagian data resource pada REST API?'],
+            [
+                'type' => 'multiple_choice',
+                'points' => 10,
+                'sort_order' => 7,
+            ]
+        );
+        QuestionOption::updateOrCreate(['question_id' => $q7->id, 'option_text' => 'PATCH'], ['is_correct' => true, 'sort_order' => 1]);
+        QuestionOption::updateOrCreate(['question_id' => $q7->id, 'option_text' => 'GET'], ['is_correct' => false, 'sort_order' => 2]);
+        QuestionOption::updateOrCreate(['question_id' => $q7->id, 'option_text' => 'OPTIONS'], ['is_correct' => false, 'sort_order' => 3]);
+        QuestionOption::updateOrCreate(['question_id' => $q7->id, 'option_text' => 'DELETE'], ['is_correct' => false, 'sort_order' => 4]);
+
+        // Question 8
+        $q8 = Question::updateOrCreate(
+            ['quiz_id' => $quiz->id, 'text' => 'Method relasi Eloquent apakah yang tepat pada Model Course jika satu Course memiliki banyak Material?'],
+            [
+                'type' => 'multiple_choice',
+                'points' => 10,
+                'sort_order' => 8,
+            ]
+        );
+        QuestionOption::updateOrCreate(['question_id' => $q8->id, 'option_text' => 'hasMany()'], ['is_correct' => true, 'sort_order' => 1]);
+        QuestionOption::updateOrCreate(['question_id' => $q8->id, 'option_text' => 'belongsTo()'], ['is_correct' => false, 'sort_order' => 2]);
+        QuestionOption::updateOrCreate(['question_id' => $q8->id, 'option_text' => 'hasOne()'], ['is_correct' => false, 'sort_order' => 3]);
+        QuestionOption::updateOrCreate(['question_id' => $q8->id, 'option_text' => 'morphTo()'], ['is_correct' => false, 'sort_order' => 4]);
+
+        // Question 9
+        $q9 = Question::updateOrCreate(
+            ['quiz_id' => $quiz->id, 'text' => 'File konfigurasi manakah di direktori config yang digunakan untuk mengatur driver dan koneksi basis data?'],
+            [
+                'type' => 'multiple_choice',
+                'points' => 10,
+                'sort_order' => 9,
+            ]
+        );
+        QuestionOption::updateOrCreate(['question_id' => $q9->id, 'option_text' => 'config/database.php'], ['is_correct' => true, 'sort_order' => 1]);
+        QuestionOption::updateOrCreate(['question_id' => $q9->id, 'option_text' => 'config/app.php'], ['is_correct' => false, 'sort_order' => 2]);
+        QuestionOption::updateOrCreate(['question_id' => $q9->id, 'option_text' => 'config/services.php'], ['is_correct' => false, 'sort_order' => 3]);
+        QuestionOption::updateOrCreate(['question_id' => $q9->id, 'option_text' => 'config/session.php'], ['is_correct' => false, 'sort_order' => 4]);
+
+        // Question 10
+        $q10 = Question::updateOrCreate(
+            ['quiz_id' => $quiz->id, 'text' => 'Middleware di Laravel bertugas memfilter dan memeriksa HTTP request yang masuk sebelum mencapai Controller.'],
+            [
+                'type' => 'true_false',
+                'points' => 10,
+                'sort_order' => 10,
+            ]
+        );
+        QuestionOption::updateOrCreate(['question_id' => $q10->id, 'option_text' => 'Benar (True)'], ['is_correct' => true, 'sort_order' => 1]);
+        QuestionOption::updateOrCreate(['question_id' => $q10->id, 'option_text' => 'Salah (False)'], ['is_correct' => false, 'sort_order' => 2]);
+
+        // Quiz Attempt for student (10 questions completed, 100 score)
         $attempt = QuizAttempt::updateOrCreate(
             ['quiz_id' => $quiz->id, 'student_id' => $student->id, 'attempt_number' => 1],
             [
@@ -280,21 +362,16 @@ class LmsSampleDataSeeder extends Seeder
             ]
         );
 
-        // Answers for attempt
-        $q1CorrectOpt = QuestionOption::where('question_id', $q1->id)->where('is_correct', true)->first();
-        if ($q1CorrectOpt) {
-            QuizAnswer::updateOrCreate(
-                ['quiz_attempt_id' => $attempt->id, 'question_id' => $q1->id],
-                ['question_option_id' => $q1CorrectOpt->id, 'is_correct' => true, 'score' => 25]
-            );
-        }
-
-        $q2CorrectOpt = QuestionOption::where('question_id', $q2->id)->where('is_correct', true)->first();
-        if ($q2CorrectOpt) {
-            QuizAnswer::updateOrCreate(
-                ['quiz_attempt_id' => $attempt->id, 'question_id' => $q2->id],
-                ['question_option_id' => $q2CorrectOpt->id, 'is_correct' => true, 'score' => 25]
-            );
+        // Answers for attempt: record correct answers for all 10 questions
+        $allQuestions = [$q1, $q2, $q3, $q4, $q5, $q6, $q7, $q8, $q9, $q10];
+        foreach ($allQuestions as $qItem) {
+            $correctOpt = QuestionOption::where('question_id', $qItem->id)->where('is_correct', true)->first();
+            if ($correctOpt) {
+                QuizAnswer::updateOrCreate(
+                    ['quiz_attempt_id' => $attempt->id, 'question_id' => $qItem->id],
+                    ['question_option_id' => $correctOpt->id, 'is_correct' => true, 'score' => 10]
+                );
+            }
         }
 
         // 7. Grades

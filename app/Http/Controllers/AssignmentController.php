@@ -6,6 +6,8 @@ use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\Course;
 use App\Models\Grade;
+use App\Services\GeminiService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -248,5 +250,30 @@ class AssignmentController extends Controller
         }
 
         return Storage::disk('public')->download($submission->file_path, $submission->file_name ?? 'submission');
+    }
+
+    public function analyzeWithAi(AssignmentSubmission $submission, GeminiService $gemini): JsonResponse
+    {
+        $user = Auth::user();
+        $assignment = $submission->assignment;
+        $course = $assignment->course;
+
+        if ($course->created_by !== $user->id && ! $user->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Hanya dosen pengampu yang dapat menggunakan fitur ini.'], 403);
+        }
+
+        try {
+            $analysis = $gemini->analyzeAssignmentSubmission($assignment, $submission);
+
+            return response()->json([
+                'success' => true,
+                'data' => $analysis,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memproses dengan AI: '.$e->getMessage(),
+            ], 500);
+        }
     }
 }

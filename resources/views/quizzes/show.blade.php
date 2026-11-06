@@ -65,7 +65,7 @@
                     <span class="block text-[10px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Jumlah Soal</span>
                     <span class="text-sm sm:text-base font-extrabold text-slate-800 flex items-center justify-center gap-1 mt-0.5">
                         <i data-lucide="file-question" class="w-4 h-4 text-sky-600"></i>
-                        {{ $quiz->questions->count() }} Butir
+                        {{ $quiz->questions->count() }} Butir ({{ (float) $quiz->questions->sum('points') }} Poin)
                     </span>
                 </div>
             </div>

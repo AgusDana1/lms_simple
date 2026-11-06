@@ -30,7 +30,7 @@ return new class extends Migration
 
         // 2. Fix quiz_answers unique constraint:
         // Originally: $table->unique('quiz_attempt_id', 'question_id'); created unique key named 'question_id' on 'quiz_attempt_id' only
-        if (Schema::hasTable('quiz_answers')) {
+        if (Schema::hasTable('quiz_answers') && DB::getDriverName() === 'mysql') {
             $indexes = DB::select("SHOW INDEX FROM quiz_answers WHERE Key_name = 'question_id'");
             if (! empty($indexes)) {
                 Schema::table('quiz_answers', function (Blueprint $table) {
@@ -74,9 +74,9 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('quiz_answers')) {
+        if (Schema::hasTable('quiz_answers') && DB::getDriverName() === 'mysql') {
             $compositeIndex = DB::select("SHOW INDEX FROM quiz_answers WHERE Key_name = 'quiz_answers_attempt_question_unique'");
-            if (! empty($compositeIndex)) {
+            if (! empty($indexes)) {
                 Schema::table('quiz_answers', function (Blueprint $table) {
                     $table->dropUnique('quiz_answers_attempt_question_unique');
                 });

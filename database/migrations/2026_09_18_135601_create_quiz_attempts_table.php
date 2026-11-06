@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('quiz_attempts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quizz_id')->constrained('quizzes')->cascadeOnDelete();
+            $table->foreignId('quiz_id')->constrained('quizzes')->cascadeOnDelete();
             $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
             $table->unsignedInteger('attempt_number');
             $table->timestamp('started_at');
@@ -25,7 +25,7 @@ return new class extends Migration
                 'graded',
             ])->default('in_progress');
             $table->timestamps();
-            $table->unique(['quizz_id', 'student_id', 'attempt_number']);
+            $table->unique(['quiz_id', 'student_id', 'attempt_number']);
         });
     }
 
